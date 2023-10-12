@@ -17,6 +17,11 @@ var mqConfigsToDelete = map[string]bool{
 	"pulsar":  true,
 }
 
+func checkFileExists(filepath string) bool {
+	_, err := os.Stat(filepath)
+	return err == nil
+}
+
 func main() {
 	srcPath := flag.String("s", "", "source yaml path, will overwrite the dst config")
 	dstPath := flag.String("d", "", "destination yaml path, will be overwritten by the src config")
@@ -26,6 +31,13 @@ func main() {
 		flag.CommandLine.Usage()
 		os.Exit(1)
 		return
+	}
+
+	if !checkFileExists(*srcPath) {
+		log.Println("missing source yaml")
+	}
+	if !checkFileExists(*dstPath) {
+		log.Panicln("missing destination yaml")
 	}
 
 	src, err := readYaml(*srcPath)
